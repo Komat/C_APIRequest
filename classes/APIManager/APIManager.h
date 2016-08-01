@@ -29,9 +29,33 @@ typedef struct URL {
 } REQUEST_URL;
 
 
+
+/**
+ *
+ */
+typedef enum RESPONSE {
+    REQUEST_SUCCESS,
+    REQUEST_FAIL
+} RESPONSE_CODE;
+
+
+/**
+ *
+ * @param urlStr
+ * @param url
+ * @param error
+ */
 void parseURL(const char *urlStr, struct URL *url, char **error);
 
 
-int requestURL(REQUEST_URL *url, void (*callback)(char *response));
+/**
+ *
+ * @param url
+ * @param callback
+ * @return
+ */
+int requestURL(REQUEST_URL *url, void (*callback)(char *response, RESPONSE_CODE result));
+
+
 
 #endif //APIMANAGER_APIMANAGER_H

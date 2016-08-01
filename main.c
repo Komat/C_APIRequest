@@ -8,7 +8,18 @@
 
 #include "classes/APIManager/APIManager.h"
 
-void callback(char *response);
+/**
+ *
+ */
+void error_message(void);
+
+/**
+ *
+ * @param response
+ * @param result
+ */
+void callback(char *response, RESPONSE_CODE result);
+
 
 int main(int argc, char *argv[]) {
 
@@ -18,6 +29,7 @@ int main(int argc, char *argv[]) {
             .query = "?city=200010",
             .port = 80,
     };
+
 
     // URLが指定されていたら
     if (argc > 1) {
@@ -30,7 +42,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
+
     printf("\n\n\n[REQUEST] http://%s%s%s\n\n\n\n", url.host, url.path, url.query);
+
 
     requestURL(&url, &callback);
 
@@ -38,10 +52,44 @@ int main(int argc, char *argv[]) {
 
 
 /**
- * API のレスポンスのコールバック
- * @param response
+ *
  */
-void callback(char *response) {
-    printf("\n\n\n%s\n\n\n", response);
+void success_message(void) {
+    printf("SUCCESS...");
 }
 
+
+/**
+ *
+ */
+void error_message(void) {
+    printf("ERROR...");
+}
+
+
+/**
+ * API のレスポンスのコールバック
+ * @param response
+ * @param result
+ */
+void callback(char *response, RESPONSE_CODE result) {
+    switch(result) {
+        case REQUEST_SUCCESS:
+            success_message();
+            break;
+
+        case REQUEST_FAIL:
+            error_message();
+            break;
+
+        default:
+            error_message();
+            break;
+
+    }
+
+
+    printf("\n\n\n(%d): %s\n\n\n", result, response);
+
+
+}

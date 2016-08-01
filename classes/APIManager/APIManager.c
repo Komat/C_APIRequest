@@ -84,10 +84,12 @@ void parseURL(const char *urlStr, struct URL *url, char **error) {
  * @param callback
  * @return
  */
-int requestURL(REQUEST_URL *url, void (*callback)(char *response)) {
+int requestURL(REQUEST_URL *url, void (*callback)(char *response, RESPONSE_CODE result)) {
 
     // ソケットのためのファイルディスクリプタ
     int _socket;
+
+    RESPONSE_CODE result = REQUEST_FAIL;
 
     // IPアドレスの解決
     struct addrinfo hints, *res;
@@ -110,15 +112,19 @@ int requestURL(REQUEST_URL *url, void (*callback)(char *response)) {
 
     // ソケット生成
     if ((_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0) {
-        fprintf(stderr, "ソケットの生成に失敗しました。\n");
+        fprintf(stderr, "SOCKET GENERATE ERROR\n");
+        callback("SOCKET GENERATE ERROR", result);
         return 1;
     }
 
     // サーバに接続
     if (connect(_socket, res->ai_addr, res->ai_addrlen) != 0) {
-        fprintf(stderr, "connectに失敗しました。\n");
+        fprintf(stderr, "CONNECT FAILED\n");
+        callback("CONNECT FAILED", result);
         return 1;
     }
+
+    result = REQUEST_SUCCESS;
 
     // HTTPプロトコルの開始 ＆サーバに送信
     sprintf(send_buf, "GET %s%s HTTP/1.0\r\n", url->path, url->query);
@@ -147,7 +153,7 @@ int requestURL(REQUEST_URL *url, void (*callback)(char *response)) {
     // ソケットを閉じる
     close(_socket);
 
-    callback("SUCCESS");
+    callback("CONNECT REQUEST SUCCESS", result);
 
     return 0;
 
